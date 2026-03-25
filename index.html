@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ポリウレア配合計算</title>
+    <style>
+        :root { --nco: #5856D6; --base: #007AFF; --addon: #FF9500; --bg: #F2F2F7; }
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .card { background: #FFF; width: 100%; max-width: 450px; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { text-align: center; font-size: 1.1rem; margin: 0 0 15px 0; color: #1c1c1e; border-bottom: 2px solid #EEE; padding-bottom: 8px; }
+        .section { margin-bottom: 12px; padding: 12px; border-radius: 12px; border: 1px solid #E5E5EA; }
+        .s-nco { background: #F5F5FF; border-color: var(--nco); }
+        .s-base { background: #F0F7FF; border-color: var(--base); }
+        .s-addon { background: #FFF9F2; border-color: var(--addon); }
+        .label { font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: block; color: #3A3A3C; }
+        .grid { display: grid; grid-template-columns: 110px 1fr 35px; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .name { font-size: 0.75rem; color: #48484A; font-weight: bold; }
+        input { width: 100%; padding: 10px; font-size: 1.1rem; border: 1px solid #C7C7CC; border-radius: 8px; outline: none; background: #FFF; }
+        input:focus { border-color: var(--base); background: #FDFDFF; }
+        input[readonly] { background: #E5E5EA; color: #636366; border-color: #D1D1D6; }
+        .unit { font-size: 0.75rem; font-weight: bold; color: #8E8E93; text-align: right; }
+        .bold-blue { font-weight: bold; color: var(--base); border-color: var(--base); }
+        .bold-orange { font-weight: bold; color: var(--addon); border-color: var(--addon); }
+        .ratio-display { background: #FFF; padding: 8px; border-radius: 6px; border: 1px solid #DDD; text-align: center; font-weight: bold; font-size: 1.1rem; color: #333; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>ポリウレア配合計算</h2>
+
+    <div class="section s-nco">
+        <span class="label">1. NCOパラメータ設定</span>
+        <div class="grid"><span class="name">アミン価</span><input type="number" id="amineVal" placeholder="280" on‍input="recalc('amineVal')"><span class="unit"></span></div>
+        <div class="grid"><span class="name">アミン当量</span><input type="number" id="amineEq" readonly tabindex="-1"><span class="unit">Eq</span></div>
+        <div class="grid"><span class="name">NCO %</span><input type="number" id="ncoPer" placeholder="15.0" on‍input="recalc('ncoPer')"><span class="unit">%</span></div>
+        <div class="grid"><span class="name">Index値</span><input type="number" id="ncoIdx" value="1.00" step="0.01" on‍input="recalc('ncoIdx')"><span class="unit"></span></div>
+    </div>
+
+    <div class="section s-base">
+        <span class="label">2. ベース重量 (製品C)</span>
+        <div class="grid"><span class="name">液A (樹脂)</span><input type="number" id="wA" placeholder="0" on‍input="recalc('wA')"><span class="unit">g</span></div>
+        <div class="grid"><span class="name">液B (硬化剤)</span><input type="number" id="wB" placeholder="0" on‍input="recalc('wB')"><span class="unit">g</span></div>
+        <div class="grid" style="border-top:1px dashed #DDD; padding-top:8px;">
+            <span class="name">合計 C</span>
+            <input type="number" id="wC" class="bold-blue" placeholder="0" on‍input="recalc('wC')">
+            <span class="unit">g</span>
+        </div>
+        <span class="name" style="margin-top:10px; display:block;">混合比率 (A : B)</span>
+        <div id="ratioAB" class="ratio-display">1.00 : 1.00</div>
+    </div>
+
+    <div class="section s-addon">
+        <span class="label">3. 添加剤(液D)・最終(液E)</span>
+        <div class="grid"><span class="name">液D 重量</span><input type="number" id="wD" placeholder="0" on‍input="recalc('wD')"><span class="unit">g</span></div>
+        <div class="grid"><span class="name">最終液 E</span><input type="number" id="wE" class="bold-orange" placeholder="0" on‍input="recalc('wE')"><span class="unit">g</span></div>
+        
+        <div style="border-top:1px dashed #DDD; padding-top:8px;">
+            <span class="label">最終液Eに対する割合</span>
+            <div class="grid"><span class="name">液A 含有率</span><input type="number" id="perA" readonly><span class="unit">%</span></div>
+            <div class="grid"><span class="name">液B 含有率</span><input type="number" id="perB" readonly><span class="unit">%</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function recalc(id) {
+    const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const setV = (id, val) => { if(document.activeElement.id !== id) document.getElementById(id).value = val ? Math.round(val * 100) / 100 : ""; };
+
+    // 1. 基本パラメータの計算
+    const amineVal = getV('amineVal');
+    const amineEq = amineVal > 0 ? 56100 / amineVal : 0;
+    document.getElementById('amineEq').value = amineEq ? Math.round(amineEq * 100) / 100 : "";
+
+    const ncoPer = getV('ncoPer');
+    const ncoIdx = getV('ncoIdx') || 1.0;
+    const ncoEq = ncoPer > 0 ? 4202 / ncoPer : 0;
+
+    if (amineEq <= 0 || ncoEq <= 0) return;
+    const ratioBA = (ncoEq / amineEq) * ncoIdx; // Aに対するBの比率
+
+    let a = 0, b = 0, c = 0, d = 0, e = 0;
+
+    // 2. 計算ロジック
+    if (id === 'wA' || id === 'amineVal' || id === 'ncoPer' || id === 'ncoIdx') {
+        a = getV('wA');
+        b = a * ratioBA;
+        c = a + b;
+        d = getV('wD');
+        e = c + d;
+    } else if (id === 'wB') {
+        b = getV('wB');
+        a = b / ratioBA;
+        c = a + b;
+        d = getV('wD');
+        e = c + d;
+    } else if (id === 'wC') {
+        c = getV('wC');
+        a = c / (1 + ratioBA);
+        b = c - a;
+        d = getV('wD');
+        e = c + d;
+    } else if (id === 'wD') {
+        d = getV('wD');
+        c = getV('wC');
+        e = c + d;
+        a = c / (1 + ratioBA);
+        b = c - a;
+    } else if (id === 'wE') {
+        e = getV('wE');
+        c = getV('wC'); // C(A+B)を固定してDを逆算
+        d = e - c;
+        if(d < 0) { d = 0; c = e; }
+        a = c / (1 + ratioBA);
+        b = c - a;
+    }
+
+    // 3. 値の反映
+    setV('wA', a);
+    setV('wB', b);
+    setV('wC', c);
+    setV('wD', d);
+    setV('wE', e);
+
+    // 4. 比率表示の更新 (Aを1とした時のBの比率)
+    document.getElementById('ratioAB').innerText = `1.00 : ${ (Math.round(ratioBA * 100) / 100).toFixed(2) }`;
+
+    // 5. 含有率(%)の更新
+    if (e > 0) {
+        document.getElementById('perA').value = Math.round((a / e) * 100 * 100) / 100;
+        document.getElementById('perB').value = Math.round((b / e) * 100 * 100) / 100;
+    } else {
+        document.getElementById('perA').value = "";
+        document.getElementById('perB').value = "";
+    }
+}
+</script>
+</body>
+</html>
