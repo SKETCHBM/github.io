@@ -33,19 +33,19 @@
 
     <div class="section s-nco">
         <span class="label">1. NCOパラメータ設定</span>
-        <div class="grid"><span class="name">アミン価</span><input type="number" id="amineVal" placeholder="280" on‍input="recalc('amineVal')"><span class="unit"></span></div>
+        <div class="grid"><span class="name">アミン価</span><input type="number" id="amineVal" placeholder="280" oninput="recalc('amineVal')"><span class="unit"></span></div>
         <div class="grid"><span class="name">アミン当量</span><input type="number" id="amineEq" readonly tabindex="-1"><span class="unit">Eq</span></div>
-        <div class="grid"><span class="name">NCO %</span><input type="number" id="ncoPer" placeholder="15.0" on‍input="recalc('ncoPer')"><span class="unit">%</span></div>
-        <div class="grid"><span class="name">Index値</span><input type="number" id="ncoIdx" value="1.00" step="0.01" on‍input="recalc('ncoIdx')"><span class="unit"></span></div>
+        <div class="grid"><span class="name">NCO %</span><input type="number" id="ncoPer" placeholder="15.0" oninput="recalc('ncoPer')"><span class="unit">%</span></div>
+        <div class="grid"><span class="name">Index値</span><input type="number" id="ncoIdx" value="1.00" step="0.01" oninput="recalc('ncoIdx')"><span class="unit"></span></div>
     </div>
 
     <div class="section s-base">
         <span class="label">2. ベース重量 (製品C)</span>
-        <div class="grid"><span class="name">液A (樹脂)</span><input type="number" id="wA" placeholder="0" on‍input="recalc('wA')"><span class="unit">g</span></div>
-        <div class="grid"><span class="name">液B (硬化剤)</span><input type="number" id="wB" placeholder="0" on‍input="recalc('wB')"><span class="unit">g</span></div>
+        <div class="grid"><span class="name">液A (樹脂)</span><input type="number" id="wA" placeholder="0" oninput="recalc('wA')"><span class="unit">g</span></div>
+        <div class="grid"><span class="name">液B (硬化剤)</span><input type="number" id="wB" placeholder="0" oninput="recalc('wB')"><span class="unit">g</span></div>
         <div class="grid" style="border-top:1px dashed #DDD; padding-top:8px;">
             <span class="name">合計 C</span>
-            <input type="number" id="wC" class="bold-blue" placeholder="0" on‍input="recalc('wC')">
+            <input type="number" id="wC" class="bold-blue" placeholder="0" oninput="recalc('wC')">
             <span class="unit">g</span>
         </div>
         <span class="name" style="margin-top:10px; display:block;">混合比率 (A : B)</span>
@@ -54,8 +54,8 @@
 
     <div class="section s-addon">
         <span class="label">3. 添加剤(液D)・最終(液E)</span>
-        <div class="grid"><span class="name">液D 重量</span><input type="number" id="wD" placeholder="0" on‍input="recalc('wD')"><span class="unit">g</span></div>
-        <div class="grid"><span class="name">最終液 E</span><input type="number" id="wE" class="bold-orange" placeholder="0" on‍input="recalc('wE')"><span class="unit">g</span></div>
+        <div class="grid"><span class="name">液D 重量</span><input type="number" id="wD" placeholder="0" oninput="recalc('wD')"><span class="unit">g</span></div>
+        <div class="grid"><span class="name">最終液 E</span><input type="number" id="wE" class="bold-orange" placeholder="0" oninput="recalc('wE')"><span class="unit">g</span></div>
         
         <div style="border-top:1px dashed #DDD; padding-top:8px;">
             <span class="label">最終液Eに対する割合</span>
@@ -70,7 +70,6 @@ function recalc(id) {
     const getV = (id) => parseFloat(document.getElementById(id).value) || 0;
     const setV = (id, val) => { if(document.activeElement.id !== id) document.getElementById(id).value = val ? Math.round(val * 100) / 100 : ""; };
 
-    // 1. 基本パラメータの計算
     const amineVal = getV('amineVal');
     const amineEq = amineVal > 0 ? 56100 / amineVal : 0;
     document.getElementById('amineEq').value = amineEq ? Math.round(amineEq * 100) / 100 : "";
@@ -80,11 +79,10 @@ function recalc(id) {
     const ncoEq = ncoPer > 0 ? 4202 / ncoPer : 0;
 
     if (amineEq <= 0 || ncoEq <= 0) return;
-    const ratioBA = (ncoEq / amineEq) * ncoIdx; // Aに対するBの比率
+    const ratioBA = (ncoEq / amineEq) * ncoIdx;
 
     let a = 0, b = 0, c = 0, d = 0, e = 0;
 
-    // 2. 計算ロジック
     if (id === 'wA' || id === 'amineVal' || id === 'ncoPer' || id === 'ncoIdx') {
         a = getV('wA');
         b = a * ratioBA;
@@ -111,24 +109,21 @@ function recalc(id) {
         b = c - a;
     } else if (id === 'wE') {
         e = getV('wE');
-        c = getV('wC'); // C(A+B)を固定してDを逆算
+        c = getV('wC');
         d = e - c;
         if(d < 0) { d = 0; c = e; }
         a = c / (1 + ratioBA);
         b = c - a;
     }
 
-    // 3. 値の反映
     setV('wA', a);
     setV('wB', b);
     setV('wC', c);
     setV('wD', d);
     setV('wE', e);
 
-    // 4. 比率表示の更新 (Aを1とした時のBの比率)
     document.getElementById('ratioAB').innerText = `1.00 : ${ (Math.round(ratioBA * 100) / 100).toFixed(2) }`;
 
-    // 5. 含有率(%)の更新
     if (e > 0) {
         document.getElementById('perA').value = Math.round((a / e) * 100 * 100) / 100;
         document.getElementById('perB').value = Math.round((b / e) * 100 * 100) / 100;
