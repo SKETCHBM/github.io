@@ -10,11 +10,17 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; display: flex; justify-content: center; }
         .card { background: #FFF; width: 100%; max-width: 480px; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* 編集可能なタイトル */
         .title-input { text-align: center; font-size: 1.1rem; font-weight: bold; margin: 0 0 15px 0; color: #1c1c1e; border: none; border-bottom: 2px solid #EEE; padding-bottom: 8px; width: 100%; border-radius: 0; }
-        .title-input:focus { border-color: var(--base); background: #FAF9FF; }
+        
+        .pass-box { background: #FFF3CD; border: 1px solid #FFEEBA; border-radius: 10px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .pass-box label { font-size: 0.8rem; font-weight: bold; color: #856404; }
+        .pass-box input { width: 120px; font-size: 0.9rem; padding: 5px; border: 1px solid #FFC107; border-radius: 6px; text-align: center; }
 
-        /* モード切り替えタブ */
+        .status-badge { font-size: 0.7rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; text-align: center; margin-bottom: 15px; }
+        .status-gas { background: #D4EDDA; color: #155724; border: 1px solid #C3E6CB; }
+        .status-local { background: #E2E3E5; color: #383D41; border: 1px solid #D6D8DB; }
+        .status-error { background: #F8D7DA; color: #721C24; border: 1px solid #F5C6CB; }
+
         .tabs { display: flex; background: #E5E5EA; padding: 2px; border-radius: 10px; margin-bottom: 15px; }
         .tab { flex: 1; text-align: center; padding: 10px 4px; font-size: 0.85rem; font-weight: bold; color: #1c1c1e; cursor: pointer; border-radius: 8px; border: none; background: transparent; transition: all 0.2s; }
         .tab.active { background: #FFF; box-shadow: 0 2px 5px rgba(0,0,0,0.12); color: var(--base); }
@@ -29,14 +35,11 @@
         .grid-mix { display: grid; grid-template-columns: 130px 1fr 1fr 25px; gap: 6px; align-items: center; margin-bottom: 4px; }
         .th-label { font-size: 0.65rem; color: #8E8E93; text-align: center; font-weight: bold; }
         
-        /* 入力フォームデザイン */
-        input[type="number"], input[type="text"], select { width: 100%; padding: 8px; font-size: 0.95rem; border: 1px solid #C7C7CC; border-radius: 8px; outline: none; background: #FFF; }
+        input[type="number"], input[type="text"], input[type="password"], select { width: 100%; padding: 8px; font-size: 0.95rem; border: 1px solid #C7C7CC; border-radius: 8px; outline: none; background: #FFF; }
         select { font-size: 0.85rem; height: 38px; cursor: pointer; }
         input[type="number"] { text-align: right; }
         input.name-input { font-size: 0.75rem; color: #48484A; font-weight: bold; border: 1px dashed #C7C7CC; background: #FAFDFB; }
-        input.name-input:focus { border-color: var(--base); background: #FFF; }
         
-        input:focus, select:focus { border-color: var(--base); background: #FDFDFF; }
         input[readonly] { background: #E5E5EA; color: #636366; border-color: #D1D1D6; }
         .unit { font-size: 0.75rem; font-weight: bold; color: #8E8E93; text-align: right; }
         
@@ -45,17 +48,14 @@
         .ratio-display { background: #FFF; padding: 8px; border-radius: 6px; border: 1px solid #DDD; text-align: center; font-weight: bold; font-size: 1.1rem; color: #333; margin-top: 5px; }
         .eq-note { font-size: 0.65rem; color: #8E8E93; text-align: right; margin-top: -2px; margin-bottom: 8px; padding-right: 30px; }
         
-        /* 合計％表示用スタイル */
         .total-ratio-box { display: flex; justify-content: space-between; align-items: center; background: #E1F0FF; border: 1px solid var(--base); padding: 8px 12px; border-radius: 8px; margin-top: 10px; margin-bottom: 10px; font-weight: bold; font-size: 0.85rem; color: #1c1c1e; }
         .total-ratio-val { font-size: 1.1rem; color: var(--base); }
 
-        /* 算出重量表示ボックス */
         .calc-weight-box { background: #FFF; border: 1px solid #D1D1D6; border-radius: 8px; padding: 6px; margin-top: 10px; }
         .calc-weight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; font-size: 0.7rem; }
         .calc-weight-item { background: #F2F2F7; padding: 6px 4px; border-radius: 6px; }
         .calc-weight-val { font-size: 0.95rem; font-weight: bold; color: var(--base); margin-top: 2px; }
 
-        /* モード表示切り替え用クラス */
         .mode-target-resin { display: none; }
         .mode-target-hardener { display: none; }
         body.target-resin .mode-target-resin { display: grid; }
@@ -65,34 +65,33 @@
 <body class="target-resin">
 
 <div class="card">
-    <!-- フリー入力可能なタイトル -->
-    <input type="text" class="title-input" value="ポリウレア配合計算（両方向対応版）">
+    <input type="text" class="title-input" value="ポリウレア配合計算（両方向対応・通信保護機能付）">
+
+    <div class="pass-box">
+        <label for="pass">認証キー(パスワード):</label>
+        <input type="password" id="pass" value="1234" placeholder="パスワード" oninput="triggerRecalc()">
+    </div>
     
-    <!-- 計算モード切り替えタブ -->
+    <div id="statusBadge" class="status-badge status-local">準備中...</div>
+
     <div class="tabs">
         <button id="tabResin" class="tab active" onclick="switchMode('resin')">ポリウレア（樹脂）から計算</button>
         <button id="tabHardener" class="tab" onclick="switchMode('hardener')">イソシアネート（硬化剤）から逆算</button>
     </div>
 
-    <!-- 1. 硬化剤＆NCOパラメータ設定 -->
     <div class="section s-nco">
         <span class="label">1. 目標基準量 & NCO条件設定</span>
-        
-        <!-- ポリウレア（樹脂）基準時 -->
         <div class="grid mode-target-resin">
             <span class="name" style="font-size: 0.8rem; font-weight: bold; color: var(--base);">目標 総樹脂重量</span>
             <input type="number" id="targetResinW" value="1000" step="any" class="bold-blue">
             <span class="unit">g</span>
         </div>
-
-        <!-- イソシアネート（硬化剤）基準時 -->
         <div class="grid mode-target-hardener">
             <span class="name" style="font-size: 0.8rem; font-weight: bold; color: var(--addon);">目標 イソシアネート 重量</span>
             <input type="number" id="targetWE" value="1000" step="any" class="bold-orange">
             <span class="unit">g</span>
         </div>
 
-        <!-- NCO選択プルダウン -->
         <div class="grid" style="margin-top: 8px; border-top: 1px dashed #DDD; padding-top: 8px;">
             <span class="name" style="font-size: 0.75rem;">NCO銘柄選択</span>
             <select id="ncoSelect" onchange="selectNcoPreset()">
@@ -105,7 +104,6 @@
             <span class="unit"></span>
         </div>
 
-        <!-- NCO% 直接入力欄 -->
         <div class="grid">
             <span class="name" style="font-size: 0.75rem;">NCO %</span>
             <input type="number" id="ncoPer" value="15.0" step="any" oninput="resetNcoSelect()">
@@ -118,19 +116,17 @@
         </div>
     </div>
 
-    <!-- 2. 樹脂側（主剤）ブレンド設定 -->
     <div class="section s-base">
         <span class="label">2. ポリウレア（樹脂）配合割合・アミン価設定</span>
 
-        <!-- 登録済み製品選択プルダウン -->
         <div class="grid" style="margin-bottom: 12px; border-bottom: 1px dashed #DDD; padding-bottom: 10px;">
             <span class="name" style="font-size: 0.75rem; font-weight: bold; color: var(--base);">登録済み製品選択</span>
             <select id="presetProductSelect" onchange="applyProductPreset()">
                 <option value="custom">直接入力（自由指定）</option>
-                <option value="p1">1. 遮熱(冷暖)シールドPu白 2.0</option>
-                <option value="p2">2. 遮熱(冷暖)シールドPu白 1.2 : PU調整剤使用</option>
-                <option value="p3">3. PU(UV)シールドクリア 1.2</option>
-                <option value="p4">4. UV(アドハ)シールドクリア 1.2</option>
+                <option value="p1">1. 遮熱(冷暖)シールドPu白 2.0</option>
+                <option value="p2">2. 遮熱(冷暖)シールドPu白 1.2 : PU調整剤使用</option>
+                <option value="p3">3. PU(UV)シールドクリア 1.2</option>
+                <option value="p4">4. UV(アドハ)シールドクリア 1.2</option>
             </select>
             <span class="unit"></span>
         </div>
@@ -142,7 +138,6 @@
             <span></span>
         </div>
                 
-        <!-- 原料1 -->
         <div class="grid-mix">
             <input type="text" class="name-input" value="酸化チタンウレア樹脂分散品">
             <input type="number" id="amineValA" value="60.75" step="any">
@@ -151,7 +146,6 @@
         </div>
         <div class="eq-note">アミン当量: <span id="eqA_disp">-</span></div>
 
-        <!-- 原料2 -->
         <div class="grid-mix">
             <input type="text" class="name-input" value="F420">
             <input type="number" id="amineValB" value="202.5" step="any">
@@ -160,7 +154,6 @@
         </div>
         <div class="eq-note">アミン当量: <span id="eqB_disp">-</span></div>
 
-        <!-- 原料3 -->
         <div class="grid-mix">
             <input type="text" class="name-input" value="F520">
             <input type="number" id="amineValC" value="193.42" step="any">
@@ -169,7 +162,6 @@
         </div>
         <div class="eq-note">アミン当量: <span id="eqC_disp">-</span></div>
 
-        <!-- 原料4：他アミン価原料 -->
         <div class="grid-mix">
             <input type="text" class="name-input" value="他アミン価原料">
             <input type="number" id="amineValD" value="187.7" step="any">
@@ -178,7 +170,6 @@
         </div>
         <div class="eq-note">アミン当量: <span id="eqD_disp">-</span></div>
 
-        <!-- 不活性原料1 -->
         <div class="grid-mix" style="border-top: 1px dashed #DDD; padding-top: 6px; margin-top: 4px;">
             <input type="text" class="name-input" value="希釈・添加剤 A">
             <input type="text" value="対象外" readonly tabindex="-1" style="font-size:0.7rem; text-align:center; background:#F2F2F7; color:#8E8E93; padding:4px;">
@@ -186,22 +177,18 @@
             <span class="unit">%</span>
         </div>
 
-        <!-- 不活性原料2 -->
         <div class="grid-mix">
             <input type="text" class="name-input" value="希釈・添加剤 B">
             <input type="text" value="対象外" readonly tabindex="-1" style="font-size:0.7rem; text-align:center; background:#F2F2F7; color:#8E8E93; padding:4px;">
             <input type="number" id="pF" value="0.000" step="any" class="ratio-input">
             <span class="unit">%</span>
         </div>
-        <div class="eq-note" style="text-align:left; margin-top:2px;">※添加剤類はNCO・アミン反応計算対象外</div>
 
-        <!-- 配合割合の合計％表示（下3桁） -->
         <div class="total-ratio-box">
             <span>配合割合の合計％</span>
             <div><span id="totalRatioDisp" class="total-ratio-val">0.000</span> <span style="font-size:0.8rem; color:#48484A;">%</span></div>
         </div>
 
-        <!-- 算出された樹脂各重量の表示 -->
         <div class="calc-weight-box">
             <div style="font-size:0.7rem; font-weight:bold; color:#48484A; margin-bottom:4px;">【必要となる各樹脂重量 (g)】</div>
             <div class="calc-weight-grid">
@@ -214,7 +201,6 @@
             </div>
         </div>
 
-        <!-- イソシアネート基準モード時の「必要 総樹脂重量」表示 -->
         <div class="grid mode-target-hardener" style="border-top:1px dashed #DDD; padding-top:8px; margin-top:10px;">
             <span class="name" style="font-size:0.8rem; font-weight:bold;">必要 総樹脂重量</span>
             <input type="number" id="calcTotalResinW" class="bold-blue" readonly tabindex="-1">
@@ -222,11 +208,9 @@
         </div>
     </div>
 
-    <!-- 3. 計算結果＆最終配合比 -->
     <div class="section s-addon">
         <span class="label">3. 最終仕上がり（混合液）と全体の割合</span>
         
-        <!-- ポリウレア基準モード時の「必要 イソシアネート重量」表示 -->
         <div class="grid mode-target-resin">
             <span class="name" style="font-size:0.8rem; font-weight:bold; color:var(--addon);">必要 イソシアネート</span>
             <input type="number" id="calcWE" class="bold-orange" readonly tabindex="-1">
@@ -251,15 +235,11 @@
 </div>
 
 <script>
-var currentMode = 'resin';
+// 発行したGASのWebアプリURL（/exec）
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyCzzz2qVJrBEvA5wGRHfCg3Po6Y72QdiJ8qIMYLkgCihdfex9z0TwdCfQEJlz1rFF8/exec";
 
-// 登録済み製品のマスタ定義
-var productPresets = {
-    p1: { pA: 0.000,  pB: 16.000, pC: 37.000, pD: 0.000,  pE: 47.000, pF: 0.000 },
-    p2: { pA: 55.555, pB: 0.000,  pC: 36.055, pD: 0.000,  pE: 8.388,  pF: 0.000 },
-    p3: { pA: 0.000,  pB: 58.333, pC: 20.833, pD: 0.000,  pE: 7.083,  pF: 13.750 },
-    p4: { pA: 0.000,  pB: 0.000,  pC: 0.000,  pD: 58.300, pE: 8.400,  pF: 33.300 }
-};
+var currentMode = 'resin';
+var calcTimer = null;
 
 document.addEventListener("DOMContentLoaded", function() {
     var inputs = document.querySelectorAll("input[type='number']");
@@ -268,60 +248,33 @@ document.addEventListener("DOMContentLoaded", function() {
             if (this.classList.contains('ratio-input')) {
                 resetProductSelect();
             }
-            recalc();
+            triggerRecalc();
         });
-        inputs[i].addEventListener("change", recalc);
-        inputs[i].addEventListener("keyup", recalc);
-        
-        // フォーカスが外れた際の自動補正
-        inputs[i].addEventListener("blur", function() {
-            if (this.readOnly) return;
-            var val = parseFloat(this.value);
-            
-            if (this.classList.contains('ratio-input')) {
-                // 配合割合（％）の入力欄：フォーカスが外れると小数点以下3桁（例: 16 -> 16.000）に整える
-                if (isNaN(val)) {
-                    this.value = "0.000";
-                } else {
-                    this.value = val.toFixed(3);
-                }
-            } else if (this.id === 'targetResinW' || this.id === 'targetWE') {
-                if (isNaN(val) || val === 0) {
-                    this.value = "1000";
-                }
-            } else {
-                if (isNaN(val) || val === 0) {
-                    this.value = "0.0";
-                }
-            }
-            recalc();
-        });
+        inputs[i].addEventListener("change", triggerRecalc);
+        inputs[i].addEventListener("keyup", triggerRecalc);
     }
 
     var textInputs = document.querySelectorAll("input[type='text']");
     for (var j = 0; j < textInputs.length; j++) {
-        textInputs[j].addEventListener("input", recalc);
+        textInputs[j].addEventListener("input", triggerRecalc);
     }
 
-    recalc();
+    triggerRecalc();
 });
 
-// NCOプルダウン選択時
 function selectNcoPreset() {
     var select = document.getElementById('ncoSelect');
     var val = select.value;
     if (val !== 'custom') {
         document.getElementById('ncoPer').value = val;
-        recalc();
+        triggerRecalc();
     }
 }
 
-// 手入力変更時にNCOプルダウンを「直接入力」に戻す
 function resetNcoSelect() {
     var select = document.getElementById('ncoSelect');
     var currentVal = document.getElementById('ncoPer').value;
     var matched = false;
-    
     for (var i = 0; i < select.options.length; i++) {
         if (select.options[i].value === currentVal) {
             select.selectedIndex = i;
@@ -329,28 +282,57 @@ function resetNcoSelect() {
             break;
         }
     }
-    if (!matched) {
+    if (!matched) select.value = 'custom';
+}
+
+// 登録済み製品選択時のGASバックエンド呼び出し
+async function applyProductPreset() {
+    var select = document.getElementById('presetProductSelect');
+    var key = select.value;
+    var badge = document.getElementById('statusBadge');
+    
+    if (key === 'custom') return;
+
+    var pass = document.getElementById('pass').value;
+    if (!pass) {
+        alert("認証キーを入力してください。");
+        select.value = 'custom';
+        return;
+    }
+
+    try {
+        badge.className = "status-badge status-local";
+        badge.innerText = "プリセットデータ取得中...";
+        
+        const params = new URLSearchParams({
+            pass: pass,
+            presetKey: key
+        });
+
+        const response = await fetch(`${GAS_API_URL}?${params.toString()}`);
+        const result = await response.json();
+
+        if (result.status === "success" && result.type === "preset") {
+            var data = result.presetData;
+            document.getElementById('pA').value = data.pA.toFixed(3);
+            document.getElementById('pB').value = data.pB.toFixed(3);
+            document.getElementById('pC').value = data.pC.toFixed(3);
+            document.getElementById('pD').value = data.pD.toFixed(3);
+            document.getElementById('pE').value = data.pE.toFixed(3);
+            document.getElementById('pF').value = data.pF.toFixed(3);
+            triggerRecalc();
+        } else {
+            alert("認証エラー: " + result.message);
+            select.value = 'custom';
+            badge.className = "status-badge status-error";
+            badge.innerText = "認証エラー";
+        }
+    } catch (err) {
+        alert("通信エラーが発生しました。ネットワークまたはGAS設定を確認してください。");
         select.value = 'custom';
     }
 }
 
-// 登録済み製品プルダウン選択時
-function applyProductPreset() {
-    var select = document.getElementById('presetProductSelect');
-    var key = select.value;
-    if (key !== 'custom' && productPresets[key]) {
-        var data = productPresets[key];
-        document.getElementById('pA').value = data.pA.toFixed(3);
-        document.getElementById('pB').value = data.pB.toFixed(3);
-        document.getElementById('pC').value = data.pC.toFixed(3);
-        document.getElementById('pD').value = data.pD.toFixed(3);
-        document.getElementById('pE').value = data.pE.toFixed(3);
-        document.getElementById('pF').value = data.pF.toFixed(3);
-        recalc();
-    }
-}
-
-// 配合割合を手動で変更した際に製品プルダウンを「直接入力」に戻す
 function resetProductSelect() {
     document.getElementById('presetProductSelect').value = 'custom';
 }
@@ -368,46 +350,33 @@ function switchMode(mode) {
         document.body.classList.remove('target-resin');
         document.body.classList.add('target-hardener');
     }
-    recalc();
+    triggerRecalc();
 }
 
-function recalc() {
+function triggerRecalc() {
+    clearTimeout(calcTimer);
+    calcTimer = setTimeout(recalcProcess, 200);
+}
+
+// 通信（GAS）およびローカル（オフライン）フォールバック統合処理
+async function recalcProcess() {
     var getV = function(id) {
         var el = document.getElementById(id);
-        if (!el || el.value === "" || el.value === null) return 0;
+        if (!el || el.value === "") return 0;
         var parsed = parseFloat(el.value);
         return isNaN(parsed) ? 0 : parsed;
     };
 
-    var setResult = function(id, val) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.value = (val && val > 0) ? (Math.round(val * 100) / 100).toFixed(2) : "0.00";
-    };
-
-    var setTxt = function(id, val) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.innerText = (val && val > 0) ? (Math.round(val * 100) / 100).toFixed(2) + "g" : "-";
-    };
-
-    // --- 1. アミン当量の算出 ---
     var amineValA = getV('amineValA');
     var amineValB = getV('amineValB');
     var amineValC = getV('amineValC');
     var amineValD = getV('amineValD');
     
-    var amineEqA = amineValA > 0 ? 56100 / amineValA : 0;
-    var amineEqB = amineValB > 0 ? 56100 / amineValB : 0;
-    var amineEqC = amineValC > 0 ? 56100 / amineValC : 0;
-    var amineEqD = amineValD > 0 ? 56100 / amineValD : 0;
+    document.getElementById('eqA_disp').innerText = amineValA > 0 ? (56100 / amineValA).toFixed(1) : "-";
+    document.getElementById('eqB_disp').innerText = amineValB > 0 ? (56100 / amineValB).toFixed(1) : "-";
+    document.getElementById('eqC_disp').innerText = amineValC > 0 ? (56100 / amineValC).toFixed(1) : "-";
+    document.getElementById('eqD_disp').innerText = amineValD > 0 ? (56100 / amineValD).toFixed(1) : "-";
 
-    document.getElementById('eqA_disp').innerText = amineEqA > 0 ? (Math.round(amineEqA * 10) / 10).toFixed(1) : "-";
-    document.getElementById('eqB_disp').innerText = amineEqB > 0 ? (Math.round(amineEqB * 10) / 10).toFixed(1) : "-";
-    document.getElementById('eqC_disp').innerText = amineEqC > 0 ? (Math.round(amineEqC * 10) / 10).toFixed(1) : "-";
-    document.getElementById('eqD_disp').innerText = amineEqD > 0 ? (Math.round(amineEqD * 10) / 10).toFixed(1) : "-";
-
-    // 名称入力欄との同期処理
     var nameInputs = document.querySelectorAll('.name-input');
     if(nameInputs.length >= 6) {
         document.getElementById('lblA').innerText = nameInputs[0].value || '原料1';
@@ -425,91 +394,136 @@ function recalc() {
         document.getElementById('lblPerF').innerText = (nameInputs[5].value || '添加剤B') + ' 含有率';
     }
 
-    // --- 2. 主剤100gあたりの反応当量および必要イソシアネート比率の計算 ---
-    var pA = getV('pA');
-    var pB = getV('pB');
-    var pC = getV('pC');
-    var pD = getV('pD');
-    var pE = getV('pE');
-    var pF = getV('pF');
+    var pA = getV('pA'), pB = getV('pB'), pC = getV('pC');
+    var pD = getV('pD'), pE = getV('pE'), pF = getV('pF');
+    document.getElementById('totalRatioDisp').innerText = (pA + pB + pC + pD + pE + pF).toFixed(3);
 
-    // 配合割合（％）の合計を計算して表示（下3桁）
-    var totalRatio = pA + pB + pC + pD + pE + pF;
-    document.getElementById('totalRatioDisp').innerText = totalRatio.toFixed(3);
+    var payload = {
+        mode: currentMode,
+        targetResinW: getV('targetResinW'),
+        targetWE: getV('targetWE'),
+        ncoPer: getV('ncoPer'),
+        ncoIdx: getV('ncoIdx'),
+        amineValA: amineValA, amineValB: amineValB, amineValC: amineValC, amineValD: amineValD,
+        pA: pA, pB: pB, pC: pC, pD: pD, pE: pE, pF: pF
+    };
 
-    // 主剤100g中の各成分の当量数
-    var eq100A = amineEqA > 0 ? pA / amineEqA : 0;
-    var eq100B = amineEqB > 0 ? pB / amineEqB : 0;
-    var eq100C = amineEqC > 0 ? pC / amineEqC : 0;
-    var eq100D = amineEqD > 0 ? pD / amineEqD : 0;
-    var totalEq100 = eq100A + eq100B + eq100C + eq100D;
+    var badge = document.getElementById('statusBadge');
 
-    // NCO条件の取得
-    var ncoPer = getV('ncoPer');
-    var ncoIdx = getV('ncoIdx');
-    if (ncoIdx <= 0) ncoIdx = 1.0;
+    if (GAS_API_URL && !GAS_API_URL.includes("YOUR_SCRIPT_ID")) {
+        try {
+            const params = new URLSearchParams(Object.assign({ pass: document.getElementById('pass').value }, payload));
+            const response = await fetch(`${GAS_API_URL}?${params.toString()}`);
+            const result = await response.json();
 
-    // 主剤100gに対して必要なイソシアネート(硬化剤)重量 ratioE
-    var ratioE = 0;
-    if (totalEq100 > 0 && ncoPer > 0) {
-        var ncoEq = 4202 / ncoPer; 
-        ratioE = totalEq100 * ncoEq * ncoIdx;
+            if (result.status === "success" && result.type === "calc") {
+                badge.className = "status-badge status-gas";
+                badge.innerText = "● GAS（クラウド演算）接続中";
+                applyCalculatedResults(result.data);
+                return;
+            } else if (result.status === "error") {
+                badge.className = "status-badge status-error";
+                badge.innerText = "認証エラー: " + result.message;
+                return;
+            }
+        } catch (err) {
+            // 通信失敗時はローカル計算へ移行
+        }
     }
 
-    // --- 3. モード別の重量算出 ---
-    var totalResinW = 0;
+    badge.className = "status-badge status-local";
+    badge.innerText = "○ ローカル演算モード（オフライン / 直接計算）";
+    var localData = executeLocalCalculation(payload);
+    applyCalculatedResults(localData);
+}
+
+// オフライン用ローカル計算エンジン
+function executeLocalCalculation(p) {
+    var eqA = p.amineValA > 0 ? (56100 / p.amineValA) : 0;
+    var eqB = p.amineValB > 0 ? (56100 / p.amineValB) : 0;
+    var eqC = p.amineValC > 0 ? (56100 / p.amineValC) : 0;
+    var eqD = p.amineValD > 0 ? (56100 / p.amineValD) : 0;
+
+    var termA = (eqA > 0) ? (p.pA / eqA) : 0;
+    var termB = (eqB > 0) ? (p.pB / eqB) : 0;
+    var termC = (eqC > 0) ? (p.pC / eqC) : 0;
+    var termD = (eqD > 0) ? (p.pD / eqD) : 0;
+
+    var sumTerms = termA + termB + termC + termD;
+    var avgAmineEq = sumTerms > 0 ? (100 / sumTerms) : 0;
+    var ncoEq = p.ncoPer > 0 ? (4202 / p.ncoPer) : 0;
+
     var hardenerW = 0;
+    var calcTotalResinW = 0;
+
+    if (p.mode === 'hardener') {
+        calcTotalResinW = (p.targetWE * avgAmineEq) / (ncoEq * p.ncoIdx);
+        hardenerW = p.targetWE;
+    } else {
+        calcTotalResinW = p.targetResinW;
+        hardenerW = (avgAmineEq > 0) ? (p.targetResinW * ncoEq * p.ncoIdx) / avgAmineEq : 0;
+    }
+
+    var wA = (calcTotalResinW * p.pA) / 100;
+    var wB = (calcTotalResinW * p.pB) / 100;
+    var wC = (calcTotalResinW * p.pC) / 100;
+    var wD = (calcTotalResinW * p.pD) / 100;
+    var wE_add = (calcTotalResinW * p.pE) / 100;
+    var wF_add = (calcTotalResinW * p.pF) / 100;
+
+    var wFinal = calcTotalResinW + hardenerW;
+
+    return {
+        calcTotalResinW: calcTotalResinW,
+        hardenerW: hardenerW,
+        wA: wA, wB: wB, wC: wC, wD: wD, wE_add: wE_add, wF_add: wF_add,
+        wFinal: wFinal,
+        perA: wFinal > 0 ? (wA / wFinal) * 100 : 0,
+        perB: wFinal > 0 ? (wB / wFinal) * 100 : 0,
+        perC: wFinal > 0 ? (wC / wFinal) * 100 : 0,
+        perD: wFinal > 0 ? (wD / wFinal) * 100 : 0,
+        perE: wFinal > 0 ? (wE_add / wFinal) * 100 : 0,
+        perF: wFinal > 0 ? (wF_add / wFinal) * 100 : 0,
+        perHardener: wFinal > 0 ? (hardenerW / wFinal) * 100 : 0,
+        ratioE: calcTotalResinW > 0 ? (hardenerW / calcTotalResinW) * 100 : 0
+    };
+}
+
+function applyCalculatedResults(d) {
+    var setResult = function(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.value = (val && val > 0) ? (Math.round(val * 100) / 100).toFixed(2) : "0.00";
+    };
+
+    var setTxt = function(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.innerText = (val && val > 0) ? (Math.round(val * 100) / 100).toFixed(2) + "g" : "-";
+    };
 
     if (currentMode === 'hardener') {
-        // 【イソシアネート基準モード】
-        hardenerW = getV('targetWE');
-        if (ratioE > 0 && hardenerW > 0) {
-            totalResinW = hardenerW / (ratioE / 100);
-        }
-        setResult('calcTotalResinW', totalResinW);
+        setResult('calcTotalResinW', d.calcTotalResinW);
     } else {
-        // 【ポリウレア基準モード】
-        totalResinW = getV('targetResinW');
-        if (ratioE > 0 && totalResinW > 0) {
-            hardenerW = totalResinW * (ratioE / 100);
-        }
-        setResult('calcWE', hardenerW);
+        setResult('calcWE', d.hardenerW);
     }
 
-    // 各成分の個別重量(g)の算出
-    var wA = totalResinW * (pA / 100);
-    var wB = totalResinW * (pB / 100);
-    var wC = totalResinW * (pC / 100);
-    var wD = totalResinW * (pD / 100);
-    var wE_add = totalResinW * (pE / 100);
-    var wF_add = totalResinW * (pF / 100);
+    setTxt('calcWA', d.wA);
+    setTxt('calcWB', d.wB);
+    setTxt('calcWC', d.wC);
+    setTxt('calcWD', d.wD);
+    setTxt('calcWE_add', d.wE_add);
+    setTxt('calcWF_add', d.wF_add);
 
-    setTxt('calcWA', wA);
-    setTxt('calcWB', wB);
-    setTxt('calcWC', wC);
-    setTxt('calcWD', wD);
-    setTxt('calcWE_add', wE_add);
-    setTxt('calcWF_add', wF_add);
+    setResult('wF', d.wFinal);
 
-    // 最終仕上がり総重量 (混合液) = 総樹脂重量 + イソシアネート重量
-    var wFinal = totalResinW + hardenerW;
-    setResult('wF', wFinal);
-
-    // --- 4. 最終混合液に対する含有率(%)と配合比の表示 ---
-    if (wFinal > 0) {
-        document.getElementById('perA').value = ((wA / wFinal) * 100).toFixed(2);
-        document.getElementById('perB').value = ((wB / wFinal) * 100).toFixed(2);
-        document.getElementById('perC').value = ((wC / wFinal) * 100).toFixed(2);
-        document.getElementById('perD').value = ((wD / wFinal) * 100).toFixed(2);
-        document.getElementById('perE').value = ((wE_add / wFinal) * 100).toFixed(2);
-        document.getElementById('perF').value = ((wF_add / wFinal) * 100).toFixed(2);
-        document.getElementById('perHardener').value = ((hardenerW / wFinal) * 100).toFixed(2);
-        
-        if (totalResinW > 0) {
-            document.getElementById('ratioFinal').innerText = "100 : " + ratioE.toFixed(2);
-        } else {
-            document.getElementById('ratioFinal').innerText = "100 : --";
-        }
+    if (d.wFinal > 0) {
+        document.getElementById('perA').value = d.perA.toFixed(2);
+        document.getElementById('perB').value = d.perB.toFixed(2);
+        document.getElementById('perC').value = d.perC.toFixed(2);
+        document.getElementById('perD').value = d.perD.toFixed(2);
+        document.getElementById('perE').value = d.perE.toFixed(2);
+        document.getElementById('perF').value = d.perF.toFixed(2);
+        document.getElementById('perHardener').value = d.perHardener.toFixed(2);
+        document.getElementById('ratioFinal').innerText = d.calcTotalResinW > 0 ? "100 : " + d.ratioE.toFixed(2) : "100 : --";
     } else {
         document.getElementById('perA').value = "0.00";
         document.getElementById('perB').value = "0.00";
